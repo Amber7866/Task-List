@@ -3,138 +3,118 @@
 //setting button wiring: saves the users input
 //resent button wiring: resets the users input
 
-
-var studentArray = [];
-var studentID =  0;
-
-function getHandleValue(idName) {
+function saveSetting (){
+    let userName = document.getElementById("userName").value
+    let colorScheme = document.getElementById("color").value
+    let heading = document.getElementById("heading")
     
-    const value = parseInt(document.getElementById(idName).value);
-    console.log(value);
-    return value;
+    heading.innerHTML = userName + " Task List"
+
+    selectColor = document.querySelector('#color');
+    colorOutput = selectColor.value;
+    //document.querySelector('.output').textContent = output;
+    heading.style.backgroundColor=colorOutput
+}
+
+function resetSetting (){
+    document.getElementById('settingsForm').reset();
+
+    heading.innerHTML = "Task List"
+    heading.style.backgroundColor="white"
 
 }
-    function getTotal() {
-        //console.log("app js starts loading")
-        let english = getHandleValue('english');
-        let math = getHandleValue('math');
-        let physics = getHandleValue('physics');
-        let computer = getHandleValue('computer');
-        let science = getHandleValue('science');
-        //console.log("app js ends loading")
-        let total = english + math + physics + computer + science;
-        document.getElementById('total').innerHTML = total;
-        return total;
 
-    }
+let taskListArray = []
 
-    function getAverage() {
-        // option  1
-        // const total = parseInt(document.getElementById('total').innerHTML);
-        // const average = total / 5;
-        // document.getElementById('average').innerHTML = average;
+function addTask(){
+    let taskName = document.getElementById("taskDescription").value
+    let date = document.getElementById('date').value
 
-        // option 2
-        const average = getTotal() / 5;
-        document.getElementById('average').innerHTML = average;
-    }
-
-    function addStudent()  {
-    // first task  - get handle for all the subjects
-    let english = getHandleValue('english');
-    let math = getHandleValue('math');
-    let physics = getHandleValue('physics');
-    let computer = getHandleValue('computer');
-    let science = getHandleValue('science');
-
-    // need to care for the student  id
-    studentID++; // studentID = studentID + 1
-
-    // second task - add this data into an array
-    const studentObject = {
-        studentID : studentID,
-        english: english,
-        math: math,
-        physics: physics,
-        computer: computer,
-        science : science
-      };
-
-    studentArray.push(studentObject);
-    console.log('student array size is : ' + studentArray.length);
-    renderStudentList();
-    }
-
-    function renderUI(studentID, english, math, physics, computer, science) {
-        const display = `
+    const taskObject = {
+        taskTitle:taskName,
+        taskDate:date,
+        taskStatus:"New"
+    } 
     
-        <div class='student' id=${studentID}>
-           <h1>Student ID: ${studentID} </h1>
-           <br>
-           <h4>English Grade: ${english}</h4>
-           <h4>Math Grade: ${math}</h4>
-           <h4>Physics Grade: ${physics}</h4>
-           <h4>Computer Grade: ${computer}</h4>
-           <h4>Science Grade: ${science}</h4> 
-           <input type='button' value='Delete' class="delete">
-           <input type='button' value='Edit' class="edit">
-       </div>
-       <br>
-       
+    taskListArray.push(taskObject)
+    
+    document.getElementById('addTaskForm').reset();
 
-        `
-        
-        return display;
-    }
+    renderTaskList();
+}
 
-    function renderStudentList() {
-        let studentList = document.getElementById('studentList');
-        studentList.innerHTML = '';
-        for (studentIndex =0; studentIndex < studentArray.length; studentIndex++) {
+function enterTask(taskTitle, taskDate, taskStatus){
+    const display =
+    `<div class="card" style="width: 30rem;">
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                          <input class="form-check-input me-1" type="checkbox" value="" id="firstCheckbox">
+                          <label class="form-check-label" for="firstCheckbox"></label>
+                        </li>
+                      </ul>
+                    <div class="card-body">
+                      <h5 class="card-title" id="${taskTitle}">${taskTitle}</h5>
+                      <p class="card-text">${taskDate}</p>
+                      <a href="#" class="btn btn-danger">Delete</a>
+                    </div>
+                  </div>`;
+               
+    return display;
+                
+}
 
-            //console.log(studentArray[studentIndex].studentID)
-            studentList.innerHTML = studentList.innerHTML + 
-                 renderUI(studentArray[studentIndex].studentID,
-                          studentArray[studentIndex].english,
-                          studentArray[studentIndex].math,
-                          studentArray[studentIndex].physics, 
-                          studentArray[studentIndex].computer,
-                          studentArray[studentIndex].science);
 
+function renderTaskList(){
+    let taskList = document.getElementById('myTaskList');
+    taskList.innerHTML = "";
+    for (taskIndex =0; taskIndex < taskListArray.length; taskIndex++){
+        taskList.innerHTML = taskList.innerHTML + 
+            enterTask(taskListArray[taskIndex].taskTitle,
+                    taskListArray[taskIndex].taskDate,
+                     taskListArray[taskIndex].taskStatus)
+                     
+            }             
         }
-    }
-    
-    let studentList = document.getElementById('studentList');
-    // one form when you just need to call a function
-    //studentList.addEventListener('click', myButtons);
-    // second form when you pass a param 
-    studentList.addEventListener('click', (event) => { // "event" here is the event parameter
-        const clickedEvent = event.target;
-        console.log(clickedEvent.value);
-        //console.log(clickedEvent);
-        const parentNode = clickedEvent.parentNode;
-        const studentID = parseInt(parentNode.id);
-        if (clickedEvent.value === 'Delete') {
-            // we are going to use splice to remove elements
-            if (studentArray.length !== 0) {
-                //const indexToDelete = studentID - 1;
-                // find the student id
-                let indexToDelete = -1;
-                for (studentIndex =0; studentIndex < studentArray.length; studentIndex++) {
-                    if (studentArray[studentIndex].studentID === studentID) {
-                        indexToDelete = studentIndex;
-                        break;
-                    }
+        var taskList = document.getElementById("myTaskList");
+        taskList.addEventListener('click', (event) => { // "event" here is the event parameter
+            const clickedEvent = event.target;
+            console.log(clickedEvent.innerHTML);
+            console.log(clickedEvent);
+            const parentNode = clickedEvent.parentNode;
+            let taskTitle = parentNode.id;
+            //const taskTitle = parseInt(parentNode.id);
+            if (clickedEvent.innerHTML === "Delete") {
+                // we are going to use splice to remove elements
+                if (taskListArray.length !== 0) {
+                     //const indexToDelete = studentID - 1;
+            // find the student id
+            let indexToDelete = 0;
+            for (taskIndex =0; taskIndex < taskListArray.length; taskIndex++) {
+                if (taskListArray[taskIndex].taskTitle === taskTitle) {
+                    indexToDelete = taskIndex;
+                    break;
                 }
-                studentArray.splice(indexToDelete,1)
-                renderStudentList()
             }
-
-        }else if (clickedEvent.value === 'Edit') {
-            alert('code pending');
-        }else {
-            alert('button is not supported')
+            
+            taskListArray.splice(indexToDelete,1)
+            renderTaskList()
         }
 
-    
-    })
+    }else if (clickedEvent.value === 'firstCheckbox') {
+        alert('checkbox is selected');
+        taskListArray.splice(indexToDelete,0)
+            renderTaskList()
+    }else {
+        // alert('button is not supported')
+    }
+console.log(firstCheckbox);
+// let checkBox = document.getElementById("firstCheckbox")
+// checkBox.addEventListener('click', (event)) =>
+
+})
+        
+
+
+       
+         
+
